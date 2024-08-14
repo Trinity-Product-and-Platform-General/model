@@ -14,7 +14,7 @@ cubes :
         sql: physician_name
         type: string
     
-      - name: organisation_id_v1
+      - name: organisation_id
         sql: hco_affiliation_id
         type: string
  
@@ -22,7 +22,7 @@ cubes :
         sql: hco_affiliation_name
         type: string
     
-      - name: brand_nm
+      - name: brand_name
         sql: brand
         type: string
 
