@@ -1,375 +1,227 @@
-cubes :
-  - name: hcp_data
-    sql_table: MASTER_TABLE.HCP_MASTER_TABLE
-    public: true
-
-    dimensions:
-
-      - name: hcp_id
-        sql: hcp_id
-        type: string
-        primary_key : true
-
-      - name: hcp_name
-        sql: physician_name
-        type: string
-    
-      - name: organisation_id_v1
-        sql: hco_affiliation_id
-        type: string
- 
-      - name: organisation_name
-        sql: hco_affiliation_name
-        type: string
-    
-      - name: brand_nm
-        sql: brand
-        type: string
-
-      - name: region_id
-        sql: region_id
-        type: string
-    
-      - name: region_name
-        sql: region
-        type: string
-
-      - name: territory
-        sql: "CONCAT ({CUBE}.territory, ' (' , {CUBE}.territory_id , ')' )"
-        type: string
-
-      - name: zip_code
-        sql: zip
-        type: number
-        
-      - name: address
-        sql: address
-        type: string
-    
-      - name: state
-        sql: city_state
-        type: string
-    
-      - name: target_segment
-        sql: segment
-        type: string
-
-      - name: payer
-        sql : payer
-        type : string
-
-      - name: market
-        sql : market
-        type : string
-  
-      - name: channel_type
-        sql: channel
-        type: string
-
-
-      - name: last_shipment_date
-        sql: last_shipment_date
-        type: time
-
-      - name: last_call_date
-        sql: last_call_date
-        type: time
-
-      - name: trx_flag
-        sql: trx_flag
-        type: number
-
-      - name: nrx_flag
-        sql: nrx_flag
-        type: number
-
-      - name: nbrx_flag
-        sql: nbrx_flag
-        type: number
-
-      - name: ic_eligible_flag
-        sql: ic_eligible
-        type: string
-
-      - name: demand_flag
-        sql: is_demand_flag
-        type: string
-
-      - name: pdrp_flag
-        sql: pdrp
-        type: string
-    
-      - name: target
-        sql: is_target
-        type: string
-
-      - name: top_growth_2022
-        sql: top_growth_2022
-        type: string
-        
-      - name : hcps_current_year_flag
-        sql : HCP_current_year
-        type : string
-
-      - name: hcps_current_quarter_flag
-        sql : HCP_current_quarter
-        type : string
-
-      - name: current_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and CURRENT_WEEK=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: previous_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and PREVIOUS_WEEK=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: current_12_month_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and CURRENT_12_MONTHS=1 THEN 'yes' ELSE 'no' END"
-        type: string
-        
-      - name: previous_12_month_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and PREVIOUS_12_MONTHS=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: year_to_date_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and year_to_date=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: previous_year_to_date_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and previous_year_to_date=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: quarter_to_date_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and quarter_to_date=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: previous_quarter_to_date_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and PREVIOUS_quarter_to_date=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: current_13_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and current_13_week=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: previous_13_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and previous_13_WEEK=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: current_4_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and CURRENT_4_WEEK=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: previous_4_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and previous_4_WEEK=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: current_8_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and current_8_WEEK=1 THEN 'yes' ELSE 'no' END"
-        type: string
-
-      - name: previous_8_week_sales_greater_than_zero
-        sql: "CASE WHEN {CUBE}.Quantity_normalized > 0 and previous_8_WEEK=1 THEN 'yes' ELSE 'no' END"
-        type: string
- 
-    measures:
-      - name: count
-        type: count
-
-      # - name: hcp_count
-      #   sql: "COUNT(DISTINCT {CUBE}.hcp_id)"
-      #   type: number
-
-      - name: hcp_count
-        sql: hcp_id
-        type: count_distinct
-
-      # - name: total_hcp_count
-      #   sql: |
-      #    select count(DISTINCT hcp_id) from PROCESSING_LAYER_DB.MASTER_TABLE.HCP_MASTER_TABLE
-      #   type: max
-
-      - name: total_hcp_count
-        sql: |
-         (select count(DISTINCT hcp_id) from PROCESSING_LAYER_DB.MASTER_TABLE.HCP_MASTER_TABLE)
-        type: max
-        
-      # - name: current_week_sales
-      #   sql: "sum(CASE WHEN {CUBE}.CURRENT_WEEK = 1 then {CUBE}.Quantity_normalized ELSE 0 END)"
-      #   type: number
-
-      - name: current_week_sales
-        sql: "CASE WHEN {CUBE}.CURRENT_WEEK = 1 then {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: previous_week_sales
-        sql: "CASE WHEN {CUBE}.PREVIOUS_WEEK = 1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: current_week_sales_growth_percentage
-        sql : "case when {previous_week_sales}=0 and {current_week_sales}=0 then 0 when {current_week_sales}=0 then -100 when {previous_week_sales}=0 then 100 else (round((({current_week_sales}-{previous_week_sales})/{previous_week_sales})*100,2)) END"
-        type: number
-
-      - name: current_12_month_sales
-        sql: "CASE WHEN {CUBE}.CURRENT_12_MONTHS=1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: previous_12_month_sales
-        sql: "CASE WHEN {CUBE}.PREVIOUS_12_MONTHS=1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: twelve_month_sales_growth_percentage
-        sql : "case when {previous_12_month_sales}=0 and {current_12_month_sales}=0 then 0 when {current_12_month_sales}=0 then -100 when {previous_12_month_sales}=0 then 100 else (round((({current_12_month_sales}-{previous_12_month_sales})/{previous_12_month_sales})*100,2)) END"
-        type: number
-
-      - name: current_year_to_date_sales
-        sql: "CASE WHEN {CUBE}.YEAR_TO_DATE=1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-        
-      - name: previous_year_to_date_sales
-        sql: "CASE WHEN {CUBE}.PREVIOUS_YEAR_TO_DATE=1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: year_to_date_sales_growth_percentage
-        sql : "case when {previous_year_to_date_sales}=0 and {current_year_to_date_sales}=0 then 0 when {current_year_to_date_sales}=0 then -100 when {previous_year_to_date_sales}=0 then 100 else (round((({current_year_to_date_sales}-{previous_year_to_date_sales})/{previous_year_to_date_sales})*100,2)) END"
-        type: number
-
-      - name: current_quarter_to_date_sales
-        sql: "CASE WHEN {CUBE}.QUARTER_TO_DATE= 1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: previous_quarter_to_date_sales
-        sql: "CASE WHEN {CUBE}.PREVIOUS_QUARTER_TO_DATE=1  THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: quarter_to_date_sales_growth_percentage
-        sql : "case when {previous_quarter_to_date_sales}=0 and {current_quarter_to_date_sales}=0 then 0 when {current_quarter_to_date_sales}=0 then -100 when {previous_quarter_to_date_sales}=0 then 100 else (round((({current_quarter_to_date_sales}-{previous_quarter_to_date_sales})/{previous_quarter_to_date_sales})*100,2)) END"
-        type: number
-
-      - name: current_13_week_sales
-        sql: "CASE WHEN {CUBE}.CURRENT_13_WEEK=1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: previous_13_week_sales
-        sql: "CASE WHEN {CUBE}.PREVIOUS_13_WEEK=1  THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: thirteen_week_sales_growth_percentage
-        sql : "case when {previous_13_week_sales}=0 and {current_13_week_sales}=0 then 0 when {current_13_week_sales}=0 then -100 when {previous_13_week_sales}=0 then 100 else (round((({current_13_week_sales}-{previous_13_week_sales})/{previous_13_week_sales})*100,2)) END"
-        type: number
-
-      - name: current_4_week_sales
-        sql: "CASE WHEN {CUBE}.CURRENT_4_WEEK=1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: previous_4_week_sales
-        sql: "CASE WHEN {CUBE}.PREVIOUS_4_WEEK=1  THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: four_week_sales_growth_percentage
-        sql : "case when {previous_4_week_sales}=0 and {current_4_week_sales}=0 then 0 when {current_4_week_sales}=0 then -100 when {previous_4_week_sales}=0 then 100 else (round((({current_4_week_sales}-{previous_4_week_sales})/{previous_4_week_sales})*100,2)) END"
-        type: number
-
-      - name: current_8_week_sales
-        sql: "CASE WHEN {CUBE}.CURRENT_8_WEEK=1 THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: previous_8_week_sales
-        sql: "CASE WHEN {CUBE}.PREVIOUS_8_WEEK=1  THEN {CUBE}.Quantity_normalized ELSE 0 END"
-        type: sum
-
-      - name: eight_week_sales_growth_percentage
-        sql : "case when {previous_8_week_sales}=0 and {current_8_week_sales}=0 then 0 when {current_8_week_sales}=0 then -100 when {previous_8_week_sales}=0 then 100 else (round((({current_8_week_sales}-{previous_8_week_sales})/{previous_8_week_sales})*100,2)) END"
-        type: number
-        
-
-      # - name: previous_12_month_calls
-      #   sql: "COUNT(DISTINCT CASE WHEN PREVIOUS_12_MONTHS=1 THEN {CUBE}.engagement_id END)"
-      #   type: number
-
-      - name: current_week_calls
-        sql: "CASE WHEN CURRENT_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: previous_week_calls
-        sql: "CASE WHEN PREVIOUS_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: current_week_calls_growth_percentage
-        sql : "case when {previous_week_calls}=0 and {current_week_calls}=0 then 0 when {current_week_calls}=0 then -100 when {previous_week_calls}=0 then 100 else (round((({current_week_calls}-{previous_week_calls})/{previous_week_calls})*100,2)) END"
-        type: number
-
-      - name: current_year_to_date_calls
-        sql: "CASE WHEN {CUBE}.YEAR_TO_DATE= 1 THEN {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: previous_year_to_date_calls
-        sql: "CASE WHEN PREVIOUS_YEAR_TO_DATE=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: year_to_date_calls_growth_percentage
-        sql : "case when {previous_year_to_date_calls}=0 and {current_year_to_date_calls}=0 then 0 when {current_year_to_date_calls}=0 then -100 when {previous_year_to_date_calls}=0 then 100 else (round((({current_year_to_date_calls}-{previous_year_to_date_calls})/{previous_year_to_date_calls})*100,2)) END"
-        type: number
-
-      - name: current_quarter_to_date_calls
-        sql: "CASE WHEN {CUBE}.QUARTER_TO_DATE= 1 THEN {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: previous_quarter_to_date_calls
-        sql: "CASE WHEN PREVIOUS_QUARTER_TO_DATE=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: quarter_to_date_calls_growth_percentage
-        sql : "case when {previous_quarter_to_date_calls}=0 and {current_quarter_to_date_calls}=0 then 0 when {current_quarter_to_date_calls}=0 then -100 when {previous_quarter_to_date_calls}=0 then 100 else (round((({current_quarter_to_date_calls}-{previous_quarter_to_date_calls})/{previous_quarter_to_date_calls})*100,2)) END"
-        type: number
-
-      - name: current_13_week_calls
-        sql: "CASE WHEN CURRENT_13_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: previous_13_week_calls
-        sql: "CASE WHEN PREVIOUS_13_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: thirteen_week_calls_growth_percentage
-        sql : "case when {previous_13_week_calls}=0 and {current_13_week_calls}=0 then 0 when {current_13_week_calls}=0 then -100 when {previous_13_week_calls}=0 then 100 else (round((({current_13_week_calls}-{previous_13_week_calls})/{previous_13_week_calls})*100,2)) END"
-        type: number
-
-      - name: current_12_month_calls
-        sql: "CASE WHEN CURRENT_12_MONTHS=1 THEN {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: previous_12_month_calls
-        sql: "CASE WHEN PREVIOUS_12_MONTHS=1 THEN {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: twelve_month_calls_growth_percentage_test
-        sql : "case when {previous_12_month_calls}=0 then 'NA' else cast((({current_12_month_calls}-{previous_12_month_calls})/{previous_12_month_calls}) as VARCHAR) END"
-        type: number
-
-      - name: twelve_month_calls_growth_percentage
-        sql : "case when {previous_12_month_calls}=0 and {current_12_month_calls}=0 then 0  when {current_12_month_calls}=0 then -100 when {previous_12_month_calls}=0 then 100 else (round((({current_12_month_calls}-{previous_12_month_calls})/{previous_12_month_calls})*100,2)) END"
-        type: number
-
-      - name: current_4_week_calls
-        sql: "CASE WHEN CURRENT_4_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: previous_4_week_calls
-        sql: "CASE WHEN PREVIOUS_4_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-        
-      - name: four_week_calls_growth_percentage
-        sql : "case when {previous_4_week_calls}=0 and {current_4_week_calls}=0 then 0 when {current_4_week_calls}=0 then -100 when {previous_4_week_calls}=0 then 100 else (round((({current_4_week_calls}-{previous_4_week_calls})/{previous_4_week_calls})*100,2)) END"
-        type: number
-		
-      - name: current_8_week_calls
-        sql: "CASE WHEN CURRENT_8_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: previous_8_week_calls
-        sql: "CASE WHEN PREVIOUS_8_WEEK=1 THEN  {CUBE}.engagement_id END"
-        type: count_distinct
-
-      - name: eight_week_calls_growth_percentage
-        sql : "case when {previous_8_week_calls}=0 and {current_8_week_calls}=0 then 0 when {current_8_week_calls}=0 then -100 when {previous_8_week_calls}=0 then 100 else (round((({current_8_week_calls}-{previous_8_week_calls})/{previous_8_week_calls})*100,2)) END"
-        type: number
+ views:
+   - name: hcp_view
+
+     cubes:
+       - join_path: hcp_data
+         includes:
+           - hcp_id	
+           - hcp_name
+           - organisation_id		  
+           - organisation_name
+           - brand_name	
+           - region_id
+           - region_name	
+           - territory
+           - address	
+           - zip_code	
+           - state
+           - city
+           - target_segment		    		  
+           - channel_type	
+           - payer
+           - market
+          #  - engagement_date
+           - last_shipment_date
+           - last_call_date
+           - nrx_flag
+           - trx_flag
+           - nbrx_flag
+           - ic_eligible_flag
+           - demand_flag
+           - pdrp_flag	
+           #- target_list
+           - hcps_current_year_flag
+           - hcps_current_quarter_flag	  
+           - target
+           - top_growth_2022
+           - current_week_sales_greater_than_zero
+           - previous_week_sales_greater_than_zero
+           - current_12_month_sales_greater_than_zero 
+           - previous_12_month_sales_greater_than_zero     
+           - year_to_date_sales_greater_than_zero
+           - previous_year_to_date_sales_greater_than_zero
+           - quarter_to_date_sales_greater_than_zero
+           - previous_quarter_to_date_sales_greater_than_zero
+           - current_13_week_sales_greater_than_zero
+           - previous_13_week_sales_greater_than_zero
+           - current_4_week_sales_greater_than_zero
+           - previous_4_week_sales_greater_than_zero
+           - current_8_week_sales_greater_than_zero
+           - previous_8_week_sales_greater_than_zero
+################### new dimensions
+           - engagement_type
+           - date
+           - year_date
+           - month_date
+           - quarter_date
+           - count
+           - hcp_count
+           - total_hcp_count
+           - current_week_sales
+           - previous_week_sales
+           - current_week_sales_growth_percentage
+           - current_12_month_sales
+           - previous_12_month_sales
+           - twelve_month_sales_growth_percentage
+           - current_year_to_date_sales
+           - previous_year_to_date_sales
+           - year_to_date_sales_growth_percentage
+           - current_quarter_to_date_sales
+           - previous_quarter_to_date_sales
+           - quarter_to_date_sales_growth_percentage
+           - current_13_week_sales
+           - previous_13_week_sales
+           - thirteen_week_sales_growth_percentage
+           - current_4_week_sales
+           - previous_4_week_sales
+           - four_week_sales_growth_percentage
+           - current_8_week_sales
+           - previous_8_week_sales
+           - eight_week_sales_growth_percentage
+           - current_week_calls
+           - previous_week_calls
+           - current_week_calls_growth_percentage
+           - current_year_to_date_calls
+           - previous_year_to_date_calls
+           - year_to_date_calls_growth_percentage
+           - current_quarter_to_date_calls
+           - previous_quarter_to_date_calls
+           - quarter_to_date_calls_growth_percentage
+           - current_13_week_calls
+           - previous_13_week_calls
+           - thirteen_week_calls_growth_percentage
+           - current_12_month_calls
+           - previous_12_month_calls
+           - twelve_month_calls_growth_percentage
+           - current_4_week_calls
+           - previous_4_week_calls
+           - four_week_calls_growth_percentage
+           - current_8_week_calls
+           - previous_8_week_calls
+           - eight_week_calls_growth_percentage
+############### new kpis
+           - current_week_hcp_count # hcp count
+           - previous_week_hcp_count
+           - current_12_month_hcp_count
+           - previous_12_month_hcp_count
+           - current_year_to_date_hcp_count
+           - previous_year_to_date_hcp_count
+           - current_quarter_to_date_hcp_count
+           - previous_quarter_to_date_hcp_count
+           - current_13_week_hcp_count
+           - previous_13_week_hcp_count
+           - current_4_week_hcp_count
+           - previous_4_week_hcp_count
+           - current_8_week_hcp_count
+           - previous_8_week_hcp_count
+           - current_week_hcp_growth_percentage # hcp growth %
+           - twelve_month_hcp_growth_percentage
+           - year_to_date_hcp_growth_percentage
+           - quarter_to_date_hcp_growth_percentage
+           - thirteen_week_hcp_growth_percentage
+           - four_week_hcp_growth_percentage
+           - eight_week_hcp_growth_percentage
+           - sales_per_hcp        # depth
+           - current_week_sales_per_hcp
+           - previous_week_sales_per_hcp
+           - current_12_month_sales_per_hcp
+           - previous_12_month_sales_per_hcp
+           - current_year_to_date_sales_per_hcp
+           - previous_year_to_date_sales_per_hcp
+           - current_quarter_to_date_sales_per_hcp
+           - previous_quarter_to_date_sales_per_hcp
+           - current_13_week_sales_per_hcp
+           - previous_13_week_sales_per_hcp
+           - current_4_week_sales_per_hcp
+           - previous_4_week_sales_per_hcp
+           - current_8_week_sales_per_hcp
+           - previous_8_week_sales_per_hcp
+           - calls_per_hcp   #frequency
+           - current_week_calls_per_hcp
+           - previous_week_calls_per_hcp
+           - current_12_month_calls_per_hcp
+           - previous_12_month_calls_per_hcp
+           - current_year_to_date_calls_per_hcp
+           - previous_year_to_date_calls_per_hcp
+           - current_quarter_to_date_calls_per_hcp
+           - previous_quarter_to_date_calls_per_hcp
+           - current_13_week_calls_per_hcp
+           - previous_13_week_calls_per_hcp
+           - current_4_week_calls_per_hcp
+           - previous_4_week_calls_per_hcp
+           - current_8_week_calls_per_hcp
+           - previous_8_week_calls_per_hcp
+           - current_week_sales_percentage   #trx distribution
+           - previous_week_sales_percentage
+           - current_12_month_sales_percentage
+           - previous_12_month_sales_percentage
+           - current_year_to_date_sales_percentage
+           - previous_year_to_date_sales_percentage
+           - current_quarter_to_date_sales_percentage
+           - previous_quarter_to_date_sales_percentage
+           - current_13_week_sales_percentage
+           - previous_13_week_sales_percentage
+           - current_4_week_sales_percentage
+           - previous_4_week_sales_percentage
+           - current_8_week_sales_percentage
+           - previous_8_week_sales_percentage
+           - current_week_hcp_reach_count  # reach
+           - previous_week_hcp_reach_count
+           - current_12_month_hcp_reach_count
+           - previous_12_month_hcp_reach_count
+           - current_year_to_date_hcp_reach_count
+           - previous_year_to_date_hcp_reach_count
+           - current_quarter_to_date_hcp_reach_count
+           - previous_quarter_to_date_hcp_reach_count
+           - current_13_week_hcp_reach_count
+           - previous_13_week_hcp_reach_count
+           - current_4_week_hcp_reach_count
+           - previous_4_week_hcp_reach_count
+           - current_8_week_hcp_reach_count
+           - previous_8_week_hcp_reach_count
+           - current_week_hcp_reach_percentage #reach %
+           - previous_week_hcp_reach_percentage
+           - current_12_month_hcp_reach_percentage
+           - previous_12_month_hcp_reach_percentage
+           - current_year_to_date_hcp_reach_percentage
+           - previous_year_to_date_hcp_reach_percentage
+           - current_quarter_to_date_hcp_reach_percentage
+           - previous_quarter_to_date_hcp_reach_percentage
+           - current_13_week_hcp_reach_percentage
+           - previous_13_week_hcp_reach_percentage
+           - current_4_week_hcp_reach_percentage
+           - previous_4_week_hcp_reach_percentage
+           - current_8_week_hcp_reach_percentage
+           - previous_8_week_hcp_reach_percentage
+           - current_week_calls_attainment #calls attainment
+           - previous_week_calls_attainment
+           - current_12_month_calls_attainment
+           - previous_12_month_calls_attainment
+           - current_year_to_date_calls_attainment
+           - previous_year_to_date_calls_attainment
+           - current_quarter_to_date_calls_attainment
+           - previous_quarter_to_date_calls_attainment
+           - current_13_week_calls_attainment
+           - previous_13_week_calls_attainment
+           - current_4_week_calls_attainment
+           - previous_4_week_calls_attainment
+           - current_8_week_calls_attainment
+           - previous_8_week_calls_attainment
+           - current_week_sales_attainment  #sales attainment
+           - previous_week_sales_attainment
+           - current_12_month_sales_attainment
+           - previous_12_month_sales_attainment
+           - current_year_to_date_sales_attainment
+           - previous_year_to_date_sales_attainment
+           - current_quarter_to_date_sales_attainment
+           - previous_quarter_to_date_sales_attainment
+           - current_13_week_sales_attainment
+           - previous_13_week_sales_attainment
+           - current_4_week_sales_attainment
+           - previous_4_week_sales_attainment
+           - current_8_week_sales_attainment
+           - previous_8_week_sales_attainment
+
+          
+           
+         
